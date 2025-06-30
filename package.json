@@ -1,0 +1,29 @@
+{
+  "name": "trust_lens_extension",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npx tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/isseidangol/trust_lens_extension.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/isseidangol/trust_lens_extension/issues"
+  },
+  "homepage": "https://github.com/isseidangol/trust_lens_extension#readme",
+  "dependencies": {
+    "antd": "^5.26.3",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "typescript": "^5.8.3"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.328"
+  }
+}

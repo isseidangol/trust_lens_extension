@@ -1,0 +1,44 @@
+{
+  "manifest_version": 3,
+  "name": "TrustLens – Review Analyzer",
+  "description": "Scrape product reviews and send them to an AI backend for analysis.",
+  "version": "2.0.0",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "host_permissions": [
+    "*://*.amazon.com/*",
+    "*://*.amazon.ca/*",
+    "*://*.amazon.co.uk/*",
+    "*://*.wish.com/*",
+    "*://*.temu.com/*",
+    "*://*.aliexpress.com/*"
+  ],
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/logo.png",
+      "48": "icons/logo.png",
+      "128": "icons/logo.png"
+    }
+  },
+  "background": {
+    "service_worker": "dist/service_worker.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.amazon.com/*",
+        "*://*.amazon.ca/*",
+        "*://*.amazon.co.uk/*",
+        "*://*.wish.com/*",
+        "*://*.temu.com/*",
+        "*://*.aliexpress.com/*"
+      ],
+      "js": ["dist/content_script.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
