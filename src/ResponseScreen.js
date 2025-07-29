@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo} from 'react';
 import { Tabs, Tag, List, Typography } from 'antd';
 import { Gauge } from '@ant-design/plots';
 
@@ -11,25 +11,36 @@ const sentimentColors = {
 };
 
 const ResponseScreen = ({ data }) => {
-    const {
-        site_name,
-        product_name,
-        custom_rating,
-        reviews,
-        pros,
-        cons
-    } = data;
+    const [showGauge, setShowGauge] = useState(false);
 
-    const sentimentCounts = {
-        positive: reviews.filter(r => r.rating >= 4).length,
-        neutral: reviews.filter(r => r.rating === 3).length,
-        negative: reviews.filter(r => r.rating <= 2).length
-    };
+    useEffect(() => {
+        // Give it time to mount after tabs layout
+        const timeout = setTimeout(() => {
+            setShowGauge(true);
+        }, 100); // Delay rendering Gauge slightly
 
-    const trustScore = custom_rating && custom_rating.trust_lens_score && custom_rating.score_out_of
-        ? Math.round((custom_rating.trust_lens_score / custom_rating.score_out_of) * 100)
-        : 73; // fallback
+        return () => clearTimeout(timeout);
+        }, []);
 
+    const sentimentCounts = useMemo(() => {
+        if (!Array.isArray(data?.reviews)) {
+        return { positive: 0, neutral: 0, negative: 0 };
+        }
+        return data.reviews.reduce(
+        (acc, r) => {
+            const rating = r.rating || 3;
+            if (rating >= 4) acc.positive++;
+            else if (rating === 3) acc.neutral++;
+            else acc.negative++;
+            return acc;
+        },
+        { positive: 0, neutral: 0, negative: 0 }
+        );
+    }, [data?.reviews]);
+
+    const trustScore = typeof data.trust_score === 'number' ? (data.trust_score * 10) : 0;
+    const maxTrustScore = 100;
+    const gaugePercentage = Math.round((trustScore / maxTrustScore) * 100);
     const gaugeConfig = {
         autoFit: true,
         data: {
@@ -63,17 +74,29 @@ const ResponseScreen = ({ data }) => {
         },
     };
 
+      // --- Pros & Cons ---
+    const pros = Array.isArray(data.pros_cons?.pros) ? data.pros_cons.pros : [];
+    const cons = Array.isArray(data.pros_cons?.cons) ? data.pros_cons.cons : [];
 
-    const [showGauge, setShowGauge] = useState(false);
+      // --- Worth Buying ---
+    const worthBuying = data.worth_buying ? (
+        <Tag color={data.worth_buying.toLowerCase() === 'yes' ? 'green' : 'red'}>
+        {data.worth_buying}
+        </Tag>
+    ) : null;
 
-    useEffect(() => {
-        // Give it time to mount after tabs layout
-        const timeout = setTimeout(() => {
-            setShowGauge(true);
-        }, 100); // Delay rendering Gauge slightly
+    const isValidData = data && typeof data === 'object';
 
-        return () => clearTimeout(timeout);
-        }, []);
+    if (!isValidData) {
+        return (
+            <div style={{ padding: 16, textAlign: 'center' }}>
+            <Typography.Title level={5} type="danger">Something went wrong</Typography.Title>
+            <Typography.Text>
+                There was an issue while rendering the results. Please try again.
+            </Typography.Text>
+            </div>
+        );
+    }
 
     return(
         <div>
@@ -86,6 +109,13 @@ const ResponseScreen = ({ data }) => {
                                 {showGauge ? <Gauge {...gaugeConfig} /> : <div>Loading Gauge...</div>}
                         </div>
                     </div>
+
+                    {worthBuying && (
+                        <div style={{ textAlign: 'center', margin: '12px 0' }}>
+                            <Text strong>Worth Buying? </Text>
+                            {worthBuying}
+                        </div>
+                        )}
 
                     <div>
                         <Title level={5}>Sentiment Summary</Title>
@@ -112,11 +142,11 @@ const ResponseScreen = ({ data }) => {
             <Tabs.TabPane tab="Details" key="details">
                 <List
                 itemLayout="vertical"
-                dataSource={reviews}
+                dataSource={Array.isArray(data.reviews) ? data.reviews : []}
                 style={{ padding: 4 }}
                 renderItem={(item) => (
                     <List.Item>
-                    <Text strong>{item.author}</Text>: <Text>{item.text}</Text> <Tag color="blue">⭐ {item.rating}</Tag>
+                    <Text strong>{item.reviewer_name}</Text>: <Text>{item.review_text}</Text> <Tag color="blue">⭐ {item.rating}</Tag>
                     </List.Item>
                 )}
                 />
