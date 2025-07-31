@@ -11,6 +11,7 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
       console.log('cookieHeader',cookieHeader)
 
       // 3) Send fetch with cookies in the body
+      // fetch('http://3.82.200.214:3001/scrape', {
       fetch('http://localhost:3001/scrape', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

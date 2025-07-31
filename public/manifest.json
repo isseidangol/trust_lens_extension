@@ -7,6 +7,7 @@
   "host_permissions": [
     "*://*.amazon.com/*",
     "*://*.aliexpress.com/*",
+    "*://*.aliexpress.us/*",
     "*://*.temu.com/*"
   ],
   "action": {
@@ -20,7 +21,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["*://*.amazon.com/*", "*://*.aliexpress.com/*",  "*://*.temu.com/*"],
+      "matches": ["*://*.amazon.com/*", "*://*.aliexpress.com/*","*://*.aliexpress.us/*",  "*://*.temu.com/*"],
       "js": ["static/js/contentScript.js"]
     }
   ]

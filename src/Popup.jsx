@@ -7,24 +7,6 @@ const { Step } = Steps;
 
 /* global chrome */
 
-const dummyResponse = {
-  site_name: "amazon.com",
-  product_name: "Example Product",
-  custom_rating: {
-    trust_lens_score: 73,
-    score_out_of: 100
-  },
-  reviews: [
-    { author: "Alice", text: "Excellent build quality!", rating: 5 },
-    { author: "Bob", text: "Battery life is okay.", rating: 3 },
-    { author: "Carol", text: "Stopped working after a week.", rating: 1 },
-    { author: "Dan", text: "Love the display and performance.", rating: 4 },
-    { author: "Eve", text: "Disappointing customer service.", rating: 2 }
-  ],
-  pros: ["Great build", "Fast performance", "Nice display"],
-  cons: ["Short battery", "Poor support", "Breaks easily"]
-};
-
 export default function Popup() {
   const [url, setUrl] = useState('');
 
@@ -86,7 +68,7 @@ export default function Popup() {
     setTimeout(() => {
       setLoadingPhase('analyzing');
       setCurrentStep(1);
-    }, 1000);
+    }, 5000);
     chrome.runtime.sendMessage(
       { type: 'SCRAPE_PAGE', url },
       response => {
